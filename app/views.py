@@ -1,18 +1,10 @@
 # -*- encoding: utf-8 -*-
-"""
-License: MIT
-Copyright (c) 2019 - present AppSeed.us
-"""
-
-# Python modules
 import os, logging 
 
-# Flask modules
 from flask               import render_template, request, url_for, redirect, send_from_directory
 from flask_login         import login_user, logout_user, current_user, login_required
 from werkzeug.exceptions import HTTPException, NotFound, abort
 
-# App modules
 from app        import app, lm, db, bc
 from app.models import User
 from app.forms  import LoginForm, RegisterForm
@@ -109,6 +101,7 @@ def login():
     return render_template('layouts/auth-default.html',
                             content=render_template( 'pages/login.html', form=form, msg=msg ) )
 
+
 # App main route + generic routing
 @app.route('/', defaults={'path': 'index.html'})
 @app.route('/<path>')
@@ -129,7 +122,41 @@ def index(path):
         return render_template('layouts/auth-default.html',
                                 content=render_template( 'pages/404.html' ) )
 
-# Return sitemap 
-@app.route('/sitemap.xml')
-def sitemap():
-    return send_from_directory(os.path.join(app.root_path, 'static'), 'sitemap.xml')
+
+#------UPLOADING VIDEO FUNC
+def resumable_upload(request):
+  response = None
+  error = None
+  retry = 0
+  while response is None:
+    try:
+      print ('Uploading file...')
+      status, response = request.next_chunk()
+      if response is not None:
+        if 'id' in response:
+          print ('Video id "%s" was successfully uploaded.' % response['id'])
+          return response['id']
+        else:
+          #exit('The upload failed with an unexpected response: %s' % response)
+          return "ERROR"
+    except HttpError as e:
+      if e.resp.status in RETRIABLE_STATUS_CODES:
+        error = 'A retriable HTTP error %d occurred:\n%s' % (e.resp.status,
+                                                             e.content)
+      else:
+        raise
+    except RETRIABLE_EXCEPTIONS as e:
+      error = 'A retriable error occurred: %s' % e
+
+    if error is not None:
+      print (error)
+      retry += 1
+      if retry > MAX_RETRIES:
+        #exit('No longer attempting to retry.')
+        return "ERROR"
+
+      max_sleep = 2 ** retry
+      sleep_seconds = random.random() * max_sleep
+      print ('Sleeping %f seconds and then retrying...' % sleep_seconds)
+      time.sleep(sleep_seconds)
+  return "ERROR"

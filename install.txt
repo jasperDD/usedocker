@@ -1,0 +1,1 @@
+docker run  --restart unless-stopped -it -d -p 0.0.0.0:3000:3000 -p 0.0.0.0:5000:80 --name videogen -v /home/user/flask-argon-dashboard:/workspace cloverzrg/cloud9 --auth habib:habib
