@@ -1,0 +1,1 @@
+gunicorn --worker-class eventlet --workers 2 wsgi:app --timeout 1800 --keep-alive 1800 --reload --bind 0.0.0.0:3000 --log-level debug 
