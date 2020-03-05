@@ -19141,7 +19141,7 @@ textarea[resize='horizontal']
 .navbar-vertical .navbar-brand > img
 {
     max-width: 100%;
-    max-height: 2rem;
+    max-height: 72px;
 }
 @media (min-width: 768px)
 {
@@ -19351,7 +19351,7 @@ textarea[resize='horizontal']
 }
 .navbar-vertical.navbar-expand-xs .navbar-brand-img
 {
-    max-height: 2.5rem;
+    max-height: 72px;
 }
 .navbar-vertical.navbar-expand-xs .navbar-user
 {
@@ -19476,7 +19476,7 @@ textarea[resize='horizontal']
     }
     .navbar-vertical.navbar-expand-sm .navbar-brand-img
     {
-        max-height: 2.5rem;
+        max-height: 72px;
     }
     .navbar-vertical.navbar-expand-sm .navbar-user
     {
@@ -19602,7 +19602,7 @@ textarea[resize='horizontal']
     }
     .navbar-vertical.navbar-expand-md .navbar-brand-img
     {
-        max-height: 2.5rem;
+        max-height: 72px;
     }
     .navbar-vertical.navbar-expand-md .navbar-user
     {
@@ -20147,7 +20147,7 @@ textarea[resize='horizontal']
     }
     .navbar-collapse .collapse-brand img
     {
-        height: 36px;
+        height: 72px;
     }
     .navbar-collapse .collapse-close
     {

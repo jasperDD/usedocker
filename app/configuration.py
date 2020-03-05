@@ -10,6 +10,7 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config():
+	APP_ROOT = "/workspace/"
 
 	CSRF_ENABLED = True
 	SECRET_KEY   = "77tgFCdrEEdv77554##@3" 
