@@ -1,13 +1,22 @@
-### run app on 3000
-docker run  --restart unless-stopped -it -d -p 0.0.0.0:3000:3000 -p 0.0.0.0:5000:80 --name videogen -v /home/user/flask-argon-dashboard:/workspace cloverzrg/cloud9 --auth habib:habib
+### Среда 
+linux vps (ubuntu) с установленным docker
 
-### run app on 80
+### Копирование репозитория github.com с приложением 
+
+### Копирование докер контейнера с репозитория hub.docker.com
+
+
+
+### Запуск контейнера на VPS с приложением на 80 м порте и редактором на 5199 порте
+
 docker run  --restart unless-stopped -it -d -p 0.0.0.0:80:3000 -p 0.0.0.0:5000:80 --name videogen_new -v /home/user/flask-argon-dashboard:/workspace videogen_image --auth habib:habib
 
-### authorization to site
-*auth to ide*  - habib:habib
+### Данные авторизации в редакторе
+habib:habib
+### Данные авторизации на сайте по умолчанию
+admin:admin
 
-*auth to app* - admin:admin
-
-### run redis for socketio multiprocess
+### Запуск redis сервера приложения внутри редактора
 sudo redis-server
+
+### Запуск самого приложения внутри редактора
