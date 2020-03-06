@@ -7,10 +7,11 @@ from flask_login         import login_user, logout_user, current_user, login_req
 from werkzeug.exceptions import HTTPException, NotFound, abort
 from datetime import datetime, date
 
-from app        import app, lm, db, bc, socketio
+from app        import app, lm, db, bc
 from app.models import User
 from app.forms  import LoginForm, RegisterForm
-from app.generator import Generator
+from subprocess import call
+# from app.generator import Generator
 
 
 # provide login manager with load_user callback
@@ -27,19 +28,15 @@ def logout():
 # Register a new user
 @app.route('/register.html', methods=['GET', 'POST'])
 def register():
-    
     # declare the Registration Form
     form = RegisterForm(request.form)
-
     msg = None
 
     if request.method == 'GET': 
-        return render_template('layouts/auth-default.html',
-                                content=render_template( 'pages/register.html', form=form, msg=msg ) )
+        return render_template('layouts/auth-default.html', content=render_template( 'pages/register.html', form=form, msg=msg ) )
 
     # check if both http method is POST and form is valid on submit
     if form.validate_on_submit():
-
         # assign form data to variables
         username = request.form.get('username', '', type=str)
         password = request.form.get('password', '', type=str) 
@@ -55,20 +52,14 @@ def register():
             msg = 'Error: User exists!'
         
         else:         
-
             pw_hash = password #bc.generate_password_hash(password)
-
             user = User(username, email, pw_hash)
-
             user.save()
-
             msg = 'User created, please <a href="' + url_for('login') + '">login</a>'     
-
     else:
         msg = 'Input error'     
 
-    return render_template('layouts/auth-default.html',
-                            content=render_template( 'pages/register.html', form=form, msg=msg ) )
+    return render_template('layouts/auth-default.html', content=render_template( 'pages/register.html', form=form, msg=msg ))
 
 # Authenticate user
 @app.route('/login.html', methods=['GET', 'POST'])
@@ -99,24 +90,20 @@ def login():
 # App main route + generic routing
 @app.route('/')
 def index():
-    if not current_user.is_authenticated:
-        return redirect(url_for('login'))
-
-    return render_template('layouts/default.html', content=render_template('pages/index.html'))
-    #return render_template('layouts/auth-default.html',content=render_template( 'pages/404.html' ))
-
-@app.route('/output/<path:path>')
-def send_video(path):
-    return send_from_directory('/workspace/output', path)
+    return "server"
     
-@app.route('/download/<path:path>')
-def download_video(path):
-    return send_from_directory('/workspace/output', path, as_attachment=True)
+    # if not current_user.is_authenticated:
+    #     return redirect(url_for('login'))
+
+    # return render_template('layouts/default.html', content=render_template('pages/index.html'))
+
+# @app.route('/output/<path:path>')
+# def send_video(path):
+#     return send_from_directory('/workspace/output', path)
     
-@app.route('/player', methods = ['GET'])
-def player():
-    return render_template('layouts/default.html', content=render_template('pages/player.html', link_download="/download/output_video.mp4", link = "/output/output_video.mp4"))
-    # return render_template('layouts/default.html', content=render_template('pages/player.html', link_download= request.args.get('link_download'), link = request.args.get('link')))
+# @app.route('/download/<path:path>')
+# def download_video(path):
+#     return send_from_directory('/workspace/output', path, as_attachment=True)
 
 # HOOK TO SHOW PROGRESS WITH SOCKETIO FROM OTHER MODULE PROCESS
 import multiprocessing
@@ -132,36 +119,41 @@ def generate():
         
         thread = multiprocessing.Process(target=start, args=(filename_out, text))
         thread.start()
-        
-        # generator = Generator(phrase=text, videoname=filename_out)
-        # output_filename = generator.generate_video()
-        
     return "NEW"
-    
 
-@app.route('/upload', methods = ['GET', 'POST'])
-def upload_generated_videos():
-    if request.method == 'POST':
-        filename_out = ""
+@app.route('/train', methods = ['POST'])
+def train():
+    for file in request.files.getlist('files'):
+        print(file.filename)
+        file.save("/workspace/app/triplet_v2/train_data/"+file.filename)
+        #call(["python3", "/app/triplet_v2/run_all.py"])
+    return "UPLOADED"
+
+@app.route('/forecast', methods = ['POST'])
+def forecast():
+    for file in request.files.getlist('files'):
+        print(file.filename)
+        file.save("/workspace/app/triplet_v2/val_data/"+file.filename)
+    return "UPLOADED"
+
         # CREATE FOLDER IF NOT EXIST
-        try:
-            os.makedirs(app.config['APP_ROOT']+"videos/") #+request.form.get('videoText')
-        except OSError as e:
-            pass
+        # try:
+        #     os.makedirs(app.config['APP_ROOT']+"videos/") #+request.form.get('videoText')
+        # except OSError as e:
+        #     pass
         
-        # SAVE UPLOADED VIDEO
-        for f in request.files.getlist('videoFile'):
-            filename_out = "video_input.mp4"#str(random.randrange(10,10000))+"_"+f.filename
-            f.save(app.config['APP_ROOT']+"videos/"+filename_out) #+request.form.get('videoText')
+        # # SAVE UPLOADED VIDEO
+        # for f in request.files.getlist('videoFile'):
+        #     filename_out = "video_input.mp4"#str(random.randrange(10,10000))+"_"+f.filename
+        #     f.save(app.config['APP_ROOT']+"videos/"+filename_out) #+request.form.get('videoText')
             
-        text = "TEXT"
-        if (request.form.get('videoText')!=""):
-            text = request.form.get('videoText')
+        # text = "TEXT"
+        # if (request.form.get('videoText')!=""):
+        #     text = request.form.get('videoText')
         
-        return render_template('layouts/default.html', content=render_template('pages/progress.html', filename=filename_out, text=text))
+        # return render_template('layouts/default.html', content=render_template('pages/progress.html', filename=filename_out, text=text))
         
         # # GENERATE
-        # 
         # # REDIRECT TO VIDEOPLAYER PAGE
         # return redirect(url_for('player', link_download=request.host_url+"download/"+output_filename, link=request.host_url+"output/"+output_filename, **request.args))
 

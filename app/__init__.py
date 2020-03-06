@@ -27,7 +27,7 @@ bc = Bcrypt      (app) # flask-bcrypt
 lm = LoginManager(   ) # flask-loginmanager
 lm.init_app(app) # init the login manager
 
-socketio = SocketIO(app, async_mode='threading', message_queue='redis://127.0.0.1:6379', threaded=True, cors_allowed_origins="*") # flask_socketio # message_queue='redis://127.0.0.1:6379'
+# socketio = SocketIO(app, async_mode='threading', message_queue='redis://127.0.0.1:6379', threaded=True, cors_allowed_origins="*") # flask_socketio # message_queue='redis://127.0.0.1:6379'
 
 # Setup database
 @app.before_first_request

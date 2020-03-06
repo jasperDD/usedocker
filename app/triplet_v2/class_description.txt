@@ -1,0 +1,5 @@
+# set 0 when stat_delivery_is_paid=0 and stat_order_confirmed_user_id=0
+# set 1 when stat_delivery_is_paid=1 and stat_order_confirmed_user_id=1
+# set 2 when stat_delivery_is_paid=0 and stat_order_confirmed_user_id=1
+# set 3 when stat_delivery_is_paid=1 and stat_order_confirmed_user_id=0
+
