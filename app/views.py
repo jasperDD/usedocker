@@ -1,18 +1,13 @@
 # -*- encoding: utf-8 -*-
-import os, logging, random, time, json
-import numpy as np
-
-from flask               import render_template, request, url_for, redirect, send_from_directory, send_file, session
+import sys, os, logging, random, time, json, zipfile
+from flask               import render_template, request, url_for, redirect, send_from_directory
 from flask_login         import login_user, logout_user, current_user, login_required
 from werkzeug.exceptions import HTTPException, NotFound, abort
-from datetime import datetime, date
 
 from app        import app, lm, db, bc
 from app.models import User
 from app.forms  import LoginForm, RegisterForm
-from subprocess import call
 # from app.generator import Generator
-
 
 # provide login manager with load_user callback
 @lm.user_loader
@@ -92,68 +87,58 @@ def login():
 def index():
     return "server"
     
-    # if not current_user.is_authenticated:
-    #     return redirect(url_for('login'))
-
-    # return render_template('layouts/default.html', content=render_template('pages/index.html'))
-
-# @app.route('/output/<path:path>')
-# def send_video(path):
-#     return send_from_directory('/workspace/output', path)
     
-# @app.route('/download/<path:path>')
-# def download_video(path):
-#     return send_from_directory('/workspace/output', path, as_attachment=True)
 
-# HOOK TO SHOW PROGRESS WITH SOCKETIO FROM OTHER MODULE PROCESS
-import multiprocessing
-def start(filename_out, text):
-    generator = Generator(phrase=text, videoname=filename_out)
-    generator.generate_video()
-    
-@app.route('/generate', methods = ['POST'])
-def generate():
-    if request.method == 'POST':
-        filename_out = request.get_json()['filename']
-        text = request.get_json()['text']
-        
-        thread = multiprocessing.Process(target=start, args=(filename_out, text))
-        thread.start()
-    return "NEW"
 
 @app.route('/train', methods = ['POST'])
 def train():
     for file in request.files.getlist('files'):
         print(file.filename)
         file.save("/workspace/app/triplet_v2/train_data/"+file.filename)
-        #call(["python3", "/app/triplet_v2/run_all.py"])
-    return "UPLOADED"
+    sys.path.insert(1, '/workspace/app/triplet_v2')
+    import main_functions as mf
+    import glob
+    # Data preprocession
+    mf.trans_data()
+    # Train DNN
+    mf.train_dnn(num_epochs=1) #DEBUG 10 
+    # Validation DNN
+    val_files = glob.glob('/workspace/app/triplet_v2/val_data'+'/*.csv')
+    train_files = glob.glob('/workspace/app/triplet_v2/train_data'+'/*.csv')
+    res=mf.proc_validation(list_files=val_files+train_files)
+    print("The minimum precision of one class among all files:",res[0],"%")
+    # Forecast based on DNN
+    mf.proc_predict(input_folder='./workspace/app/triplet_v2/train_data')
+    mf.proc_predict(input_folder='/workspace/app/triplet_v2/val_data')
+    print("All operations have been done!")
+    return "DONE"
 
 @app.route('/forecast', methods = ['POST'])
 def forecast():
     for file in request.files.getlist('files'):
         print(file.filename)
         file.save("/workspace/app/triplet_v2/val_data/"+file.filename)
-    return "UPLOADED"
-
-        # CREATE FOLDER IF NOT EXIST
-        # try:
-        #     os.makedirs(app.config['APP_ROOT']+"videos/") #+request.form.get('videoText')
-        # except OSError as e:
-        #     pass
-        
-        # # SAVE UPLOADED VIDEO
-        # for f in request.files.getlist('videoFile'):
-        #     filename_out = "video_input.mp4"#str(random.randrange(10,10000))+"_"+f.filename
-        #     f.save(app.config['APP_ROOT']+"videos/"+filename_out) #+request.form.get('videoText')
-            
-        # text = "TEXT"
-        # if (request.form.get('videoText')!=""):
-        #     text = request.form.get('videoText')
-        
-        # return render_template('layouts/default.html', content=render_template('pages/progress.html', filename=filename_out, text=text))
-        
-        # # GENERATE
-        # # REDIRECT TO VIDEOPLAYER PAGE
-        # return redirect(url_for('player', link_download=request.host_url+"download/"+output_filename, link=request.host_url+"output/"+output_filename, **request.args))
-
+    sys.path.insert(1, '/workspace/app/triplet_v2')
+    import main_functions as mf
+    import glob
+    # Data preprocession
+    mf.trans_data()
+    # Train DNN
+    mf.train_dnn(num_epochs=1) #DEBUG 10 
+    # Validation DNN
+    val_files = glob.glob('/workspace/app/triplet_v2/val_data'+'/*.csv')
+    train_files = glob.glob('/workspace/app/triplet_v2/train_data'+'/*.csv')
+    res=mf.proc_validation(list_files=val_files+train_files)
+    print("The minimum precision of one class among all files:",res[0],"%")
+    # Forecast based on DNN
+    mf.proc_predict(input_folder='./workspace/app/triplet_v2/train_data')
+    mf.proc_predict(input_folder='/workspace/app/triplet_v2/val_data')
+    print("All operations have been done!")
+    
+    zipf = zipfile.ZipFile('/workspace/app/download.zip','w', zipfile.ZIP_DEFLATED)
+    for root,dirs, files in os.walk('/workspace/app/triplet_v2/forecasts/'):
+        for file in files:
+            zipf.write('/workspace/app/triplet_v2/forecasts/'+file)
+    zipf.close()
+    
+    return send_from_directory('/workspace/app/', "download.zip", as_attachment=True)

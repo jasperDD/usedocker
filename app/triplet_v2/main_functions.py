@@ -29,17 +29,17 @@ import time
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Train DNN
 # './sd/train_data.npz'
-def train_dnn(train_data_file='./sd/train_data.npz', 
-              val_folder='./val_data', 
-              col_name_file='./sd/col_names.npz',
-              dnn_file='./sd/dnn_model.pth',  
-              c_dnn_file='./sd/c_dnn_model.pth', 
-              out_file='./results_cm.txt', 
+def train_dnn(train_data_file='/workspace/app/triplet_v2/sd/train_data.npz', 
+              val_folder='/workspace/app/triplet_v2/val_data', 
+              col_name_file='/workspace/app/triplet_v2/sd/col_names.npz',
+              dnn_file='/workspace/app/triplet_v2/sd/dnn_model.pth',  
+              c_dnn_file='/workspace/app/triplet_v2/sd/c_dnn_model.pth', 
+              out_file='/workspace/app/triplet_v2/results_cm.txt', 
               num_epochs=250,
               lr=0.00001):
     print("The training DNN has been started...")
     # load list of validation files
-    list_val_files = glob.glob(val_folder+'\*.csv')    
+    list_val_files = glob.glob(val_folder+'/*.csv')    
     s_data = np.load(train_data_file, allow_pickle = True)
     # split into X and y
     X=s_data['X']
@@ -186,8 +186,8 @@ woe_col=['stat_order_created_ts','stat_order_processed_user_id','stat_order_conf
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Variable's preprocessing for new X (for training)
 def preproc_new_X(X):
-    if not os.path.exists('./sd'):
-        os.mkdir('./sd')
+    if not os.path.exists('/workspace/app/triplet_v2/sd'):
+        os.mkdir('/workspace/app/triplet_v2/sd')
     # fill all nan
     X=X.fillna('nan')
     # Variable preprocessing
@@ -229,7 +229,7 @@ def preproc_new_X(X):
     X=bin_model.transform(X)
     print(X.shape)
     # Save model
-    pickle.dump(bin_model, open('./sd/bin_model.sav', 'wb'))
+    pickle.dump(bin_model, open('/workspace/app/triplet_v2/sd/bin_model.sav', 'wb'))
     
     dummy_col=['stat_order_is_prepay','stat_order_unique_goods','stat_order_created_ts',
                'stat_order_confirmed_ts','stat_order_country','stat_order_country_ip',
@@ -241,27 +241,27 @@ def preproc_new_X(X):
     X=dummy_model.transform(X)
     print(X.shape)
     # Save model
-    pickle.dump(dummy_model, open('./sd/dummy_model.sav', 'wb'))           
+    pickle.dump(dummy_model, open('/workspace/app/triplet_v2/sd/dummy_model.sav', 'wb'))           
     
     # Fixing all Nan and nan values in numeric format
     nan_model = impute.SimpleImputer().fit(X)
     X = nan_model.transform(X)
     # save to file this model
-    pickle.dump(nan_model, open('./sd/nan_model.sav', 'wb'))
+    pickle.dump(nan_model, open('/workspace/app/triplet_v2/sd/nan_model.sav', 'wb'))
 
     # Scaling
     # Now we have 212 features and try to robust normalize all of them
     nrm_model = preprocessing.RobustScaler().fit(X)
     X = nrm_model.transform(X)
     # save this model to the file
-    pickle.dump(nrm_model, open('./sd/nrm_model.sav', 'wb'))
+    pickle.dump(nrm_model, open('/workspace/app/triplet_v2/sd/nrm_model.sav', 'wb'))
     return X
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Variable's preprocessing for forecasting
 def preproc_X(X):
-    if not os.path.exists('./sd'):
-        os.mkdir('./sd')
+    if not os.path.exists('/workspace/app/triplet_v2/sd'):
+        os.mkdir('/workspace/app/triplet_v2/sd')
     # fill all nan
     X=X.fillna('nan')
     # extract only hours from stat_order_created_ts
@@ -282,28 +282,28 @@ def preproc_X(X):
     X[new_num_col]=X[new_num_col].astype(float).fillna(0)
     X['loss']=X.stat_order_pay_webmaster-X.stat_delivery_delivery_price-X.stat_delivery_delivery_price_return    
     
-    bin_model=pickle.load(open('./sd/bin_model.sav', 'rb'))
+    bin_model=pickle.load(open('/workspace/app/triplet_v2/sd/bin_model.sav', 'rb'))
     X=bin_model.transform(X)
-    dummy_model=pickle.load(open('./sd/dummy_model.sav', 'rb'))
+    dummy_model=pickle.load(open('/workspace/app/triplet_v2/sd/dummy_model.sav', 'rb'))
     X=dummy_model.transform(X)
-    si_model=pickle.load(open('./sd/nan_model.sav', 'rb'))
+    si_model=pickle.load(open('/workspace/app/triplet_v2/sd/nan_model.sav', 'rb'))
     X = si_model.transform(X)
-    nrm_model = pickle.load(open('./sd/nrm_model.sav', 'rb'))
+    nrm_model = pickle.load(open('/workspace/app/triplet_v2/sd/nrm_model.sav', 'rb'))
     X = nrm_model.transform(X)
     return X
 
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Forecast using list of files
-def proc_predict(input_folder='./train_data', 
-                 col_name_file='./sd/col_names.npz', 
-                 dnn_file='./sd/dnn_model.pth',
-                 out_folder='./forecasts'):
+def proc_predict(input_folder='/workspace/app/triplet_v2/train_data', 
+                 col_name_file='/workspace/app/triplet_v2/sd/col_names.npz', 
+                 dnn_file='/workspace/app/triplet_v2/sd/dnn_model.pth',
+                 out_folder='/workspace/app/triplet_v2/forecasts'):
     print("The prediction has been started...")
     if not os.path.exists(out_folder):
         os.mkdir(out_folder)
     # get all files    
-    list_files = glob.glob(input_folder+'\*.csv')
+    list_files = glob.glob(input_folder+'/*.csv')
     # the main cycle
     for i in range(len(list_files)):
         file_name = list_files[i]
@@ -360,9 +360,9 @@ def proc_predict(input_folder='./train_data',
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Validation using list of files
 def proc_validation(list_files=[], 
-                    col_name_file='./sd/col_names.npz', 
-                    dnn_file='./sd/dnn_model.pth', 
-                    out_file='./results_cm.txt',
+                    col_name_file='/workspace/app/triplet_v2/sd/col_names.npz', 
+                    dnn_file='/workspace/app/triplet_v2/sd/dnn_model.pth', 
+                    out_file='/workspace/app/triplet_v2/results_cm.txt',
                     verb = True):
     print("The validation has been started...")
     if os.path.exists(out_file):
@@ -462,12 +462,12 @@ def crt_outcome(y1,y2):
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Data transformation ('train.csv'), './sd/train_data.npz'
-def trans_data(train_folder='./train_data',
-               col_name_file='./sd/col_names.npz', 
-               out_data_file='./sd/train_data.npz'):
+def trans_data(train_folder='/workspace/app/triplet_v2/train_data',
+               col_name_file='/workspace/app/triplet_v2/sd/col_names.npz', 
+               out_data_file='/workspace/app/triplet_v2/sd/train_data.npz'):
     print("The data transformation has been started...")
     print("Aggregation all files...")
-    train_files = glob.glob(train_folder+'\*.csv')
+    train_files = glob.glob(train_folder+'/*.csv')
     if len(train_files)==0:
         print("Train files have not found!")
         sys.exit()    

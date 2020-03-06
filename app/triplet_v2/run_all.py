@@ -15,15 +15,15 @@ import glob
 # Data preprocession
 mf.trans_data()
 # Train DNN
-mf.train_dnn(num_epochs=10)
+mf.train_dnn(num_epochs=1) #DEBUG 10 
 # Validation DNN
-val_files = glob.glob('.\val_data'+'\*.csv')
-train_files = glob.glob('.\train_data'+'\*.csv')
+val_files = glob.glob('/workspace/app/triplet_v2/val_data'+'/*.csv')
+train_files = glob.glob('/workspace/app/triplet_v2/train_data'+'/*.csv')
 res=mf.proc_validation(list_files=val_files+train_files)
 print("The minimum precision of one class among all files:",res[0],"%")
 # Forecast based on DNN
-mf.proc_predict(input_folder='./train_data')
-mf.proc_predict(input_folder='./val_data')
+mf.proc_predict(input_folder='/workspace/app/triplet_v2/train_data')
+mf.proc_predict(input_folder='/workspace/app/triplet_v2/val_data')
 print("All operations have been done!")
 
 
