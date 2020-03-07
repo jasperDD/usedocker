@@ -15,7 +15,7 @@ import glob
 # Data preprocession
 mf.trans_data()
 # Train DNN
-mf.train_dnn(num_epochs=1) #DEBUG 10 
+mf.train_dnn(num_epochs=10) #DEBUG 10 
 # Validation DNN
 val_files = glob.glob('/workspace/app/triplet_v2/val_data'+'/*.csv')
 train_files = glob.glob('/workspace/app/triplet_v2/train_data'+'/*.csv')

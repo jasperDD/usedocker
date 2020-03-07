@@ -7,12 +7,11 @@
 Для примера тренировочный набор данных также включен как файл данных для 
 прогнозирования.
 
-06.12.2019.
-Alex283h
+
 """
 
 import main_functions as mf
 
-mf.proc_predict(input_folder='./train_data')
-mf.proc_predict(input_folder='./val_data')
+mf.proc_predict(input_folder='/workspace/app/triplet_v2/train_data')
+mf.proc_predict(input_folder='/workspace/app/triplet_v2/val_data')
 

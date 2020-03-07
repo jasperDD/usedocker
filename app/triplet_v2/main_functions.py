@@ -3,8 +3,7 @@
 В данном модуле собраны функции необходимые для препроцессинга данных с целью
 обучения модели и прогнозирования на её основе.
 
-04.12.2019.
-Alex283h
+
 '''
 
 import pandas as pd # for data frames
@@ -28,7 +27,7 @@ import time
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Train DNN
-# './sd/train_data.npz'
+# '/workspace/app/triplet_v2/sd/train_data.npz'
 def train_dnn(train_data_file='/workspace/app/triplet_v2/sd/train_data.npz', 
               val_folder='/workspace/app/triplet_v2/val_data', 
               col_name_file='/workspace/app/triplet_v2/sd/col_names.npz',
@@ -461,7 +460,7 @@ def crt_outcome(y1,y2):
 
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# Data transformation ('train.csv'), './sd/train_data.npz'
+# Data transformation ('train.csv'), '/workspace/app/triplet_v2/sd/train_data.npz'
 def trans_data(train_folder='/workspace/app/triplet_v2/train_data',
                col_name_file='/workspace/app/triplet_v2/sd/col_names.npz', 
                out_data_file='/workspace/app/triplet_v2/sd/train_data.npz'):
