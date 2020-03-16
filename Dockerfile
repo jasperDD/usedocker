@@ -1,10 +1,10 @@
 FROM python:3
+RUN mkdir -p /workspace
+WORKDIR /workspace
 
-WORKDIR /home/neural
-
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt
 
 COPY . .
 
-CMD [ "python", "/workspace/wsgi.py" ]
+CMD [ "python3", "/workspace/wsgi.py" ]
