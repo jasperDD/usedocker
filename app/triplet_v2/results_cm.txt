@@ -50,29 +50,27 @@ Confusion matrix in %:
 File name: /workspace/app/triplet_v2/val_data/real_2019-10-03-2019-10-03_not-system-wm_5dee1d0c5dc0e.csv
 
 Confusion matrix:
-[[808   0   0]
- [  0 283   1]
- [  0   0   0]]
+[[808   0]
+ [  0 284]]
 
 Confusion matrix in %:
-[[100.    0.    0. ]
- [  0.  100.   99.9]
- [  0.    0.    0. ]]
+[[100.   0.]
+ [  0. 100.]]
 
 
 File name: /workspace/app/triplet_v2/train_data/real_2018-01-01-2019-09-30_confirmed_not-system-wm_5de4f9c13d9fe.csv
 
 Confusion matrix:
-[[11183     0  1213   139]
- [    0 44108     0  2571]
- [  754    60 13281     0]
- [    7  1394     0 22745]]
+[[11587     0   807   141]
+ [    0 44151     0  2528]
+ [ 1058    60 12977     0]
+ [    7  1379     0 22760]]
 
 Confusion matrix in %:
-[[93.6  0.   8.4  0.5]
- [ 0.  96.8  0.  10.1]
- [ 6.3  0.1 91.6  0. ]
- [ 0.1  3.1  0.  89.4]]
+[[91.6  0.   5.9  0.6]
+ [ 0.  96.8  0.   9.9]
+ [ 8.4  0.1 94.1  0. ]
+ [ 0.1  3.   0.  89.5]]
 
 
 File name: /workspace/app/triplet_v2/train_data/real_2019-10-05-2019-10-05_not-system-wm_5dee1d1d9e8ac.csv
@@ -101,6 +99,19 @@ Confusion matrix in %:
  [  0.3   0.  100. ]]
 
 
+File name: /workspace/app/triplet_v2/train_data/1.csv
+
+Confusion matrix:
+[[818   0   0]
+ [  0 297   0]
+ [  1   1  75]]
+
+Confusion matrix in %:
+[[ 99.9   0.    0. ]
+ [  0.   99.7   0. ]
+ [  0.1   0.3 100. ]]
+
+
 File name: /workspace/app/triplet_v2/train_data/real_2019-10-09-2019-10-09_not-system-wm_5dee1d3fb625a.csv
 
 Confusion matrix:
@@ -112,6 +123,19 @@ Confusion matrix in %:
 [[ 99.9   0.    0. ]
  [  0.   99.6   0. ]
  [  0.1   0.4 100. ]]
+
+
+File name: /workspace/app/triplet_v2/train_data/2.csv
+
+Confusion matrix:
+[[691   0   0]
+ [  0 244   0]
+ [  6   0  64]]
+
+Confusion matrix in %:
+[[ 99.1   0.    0. ]
+ [  0.  100.    0. ]
+ [  0.9   0.  100. ]]
 
 
 File name: /workspace/app/triplet_v2/train_data/real_2019-10-04-2019-10-04_not-system-wm_5dee1d16b2cb7.csv
