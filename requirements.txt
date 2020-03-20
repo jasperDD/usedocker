@@ -22,3 +22,4 @@ category_encoders
 torch
 barbar
 progressbar2
+sklearn
